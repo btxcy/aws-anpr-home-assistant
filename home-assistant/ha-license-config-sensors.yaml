@@ -1,0 +1,16 @@
+- platform: template
+  sensors:
+    license_plate_system_status:
+      friendly_name: "License Plate System Status"
+      value_template: >
+        {% if states('input_text.last_plate_number') != '' %}
+          Active
+        {% else %}
+          Waiting
+        {% endif %}
+      icon_template: >
+        {% if states('input_text.last_plate_number') != '' %}
+          mdi:cctv
+        {% else %}
+          mdi:cctv-off
+        {% endif %}

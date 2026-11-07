@@ -1,0 +1,9 @@
+automation:
+  - alias: "ANPR Plate Detected"
+    trigger:
+      platform: webhook
+      webhook_id: anpr_plate_detected
+    action:
+      - service: notify.mobile_app_yourphone
+        data:
+          message: "Vehicle detected: {{ trigger.json.plate_number }}"

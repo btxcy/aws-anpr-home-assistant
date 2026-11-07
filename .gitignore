@@ -1,0 +1,14 @@
+.env
+*.pem
+*accessKeys.csv
+
+*.tar.gz
+kvs/sample.mp4
+*.log
+__pycache__/
+.DS_Store
+
+visualization-consumer/amazon_kinesis_video_consumer_library/
+object-detection-ec2/amazon-kinesis-video-streams-consumer-library-for-python/
+kvs/amazon-kinesis-video-streams-producer-sdk-cpp/
+/old/

@@ -1,0 +1,27 @@
+- sensor:
+    - name: "Last Detected License Plate"
+      unique_id: last_detected_license_plate
+      state: "{{ states('input_text.last_plate_number') }}"
+      attributes:
+        confidence: "{{ states('input_text.last_plate_confidence') }}"
+        timestamp: "{{ states('input_text.last_plate_timestamp') }}"
+        car_id: "{{ states('input_text.last_plate_car_id') }}"
+        processing_time: "{{ states('input_text.last_plate_processing_time') }}"
+        status: >
+          {% set plate = states('input_text.last_plate_number') %}
+          {% set authorized = states('input_text.authorized_plates').split(',') | map('trim') | list %}
+          {% if plate in authorized %}
+            Authorized
+          {% else %}
+            Unknown
+          {% endif %}
+      icon: mdi:car-back
+
+    - name: "Plates Detected Today"
+      unique_id: plates_detected_today
+      state: >
+        {% set today = now().date() | string %}
+        {% set history = state_attr('sensor.last_detected_license_plate', 'history') | default([]) %}
+        {{ history | selectattr('date', 'eq', today) | list | count }}
+      unit_of_measurement: "plates"
+      icon: mdi:counter

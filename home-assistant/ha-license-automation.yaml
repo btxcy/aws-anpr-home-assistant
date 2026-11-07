@@ -1,0 +1,53 @@
+- id: store_license_plate_info
+  alias: "License Plate: Store Detection Info"
+  description: "Store the latest detected plate information"
+  triggers:
+    - trigger: event
+      event_type: license_plate_detected
+  actions:
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.last_plate_number
+      data:
+        value: "{{ trigger.event.data.license_plate }}"
+
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.last_plate_confidence
+      data:
+        value: "{{ trigger.event.data.confidence }}"
+
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.last_plate_timestamp
+      data:
+        value: "{{ trigger.event.data.timestamp }}"
+  mode: queued
+
+- id: authorized_plate_welcome
+  alias: "(AWS) License Plate: Authorized"
+  triggers:
+    - trigger: event
+      event_type: license_plate_detected
+  conditions:
+    - condition: template
+      value_template: >
+        {% set detected = trigger.event.data.license_plate %}
+        {% set authorized = states('input_text.authorized_plates').split(',') | map('trim') | list %}
+        {{ detected in authorized }}
+  actions:
+    - action: notify.mobile_app_yourphone
+      data:
+        title: "Authorized License Plate Detected"
+        message: >
+          Authorized vehicle detected: {{ trigger.event.data.license_plate }}.
+          Confidence: {{ trigger.event.data.confidence }}%.
+          Detected at: {{ trigger.event.data.timestamp }}.
+        data:
+          tag: "license_plate_authorized"
+          color: "green"
+          importance: high
+          ttl: 0
+          priority: high
+          notification_icon: mdi:car-check
+  mode: queued
